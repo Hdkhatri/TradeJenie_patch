@@ -123,4 +123,4 @@ nearest_price = 40
 
 
 holiday = is_today_holiday()
-print(holiday)
+# print(holiday)
