@@ -31,7 +31,7 @@ if instrument_token is None:
     exit(1)
 logging.info(f"ℹ️ Instrument token for {SYMBOL}: {instrument_token} at current time {current_time}")
 
-# ====== Main Live Trading Loconfig['TRADE']op ======
+# ====== Main Live Trading Loop config['TRADE'] ======
 def live_trading(instruments_df, config, key, user):
 
     if config['TRADE'].lower() != "yes":
@@ -288,7 +288,7 @@ def live_trading(instruments_df, config, key, user):
                         break
 
                 # ✅ Target Achieved and Re-Entry
-                if trade and "OptionSymbol" in trade and "OptionSellPrice" in trade and config['ROLLOVER'] == 'yes' and target_hit == False:
+                if trade and "OptionSymbol" in trade and "OptionSellPrice" in trade and config['ROLLOVER'] == True and target_hit == False:
                     current_ltp = get_quotes(trade["OptionSymbol"] ,user)
                     entry_ltp = trade["OptionSellPrice"]
 

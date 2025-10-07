@@ -8,6 +8,7 @@ from tradeJenie import init_and_run
 from userdtls import get_all_active_user
 import os
 from datetime import datetime
+from commonFunction import init_db
 
 def run_user_login(user):
     print(f"Logging in user: {user['user']}")
@@ -18,7 +19,7 @@ def run_trade_genie(user):
     init_and_run(user)
 
 def run_script(script_name):
-    subprocess.run(['python', script_name])
+    subprocess.run(['/home/harshilkhatri2808/hdk_all_in_one/venv/bin/python', script_name])
 
 
 if __name__ == "__main__":
@@ -37,8 +38,11 @@ if __name__ == "__main__":
             skip_update = True
 
     if not skip_update:
-        run_script('updateInstrument.py')
+        run_script('updateinstrument.py')
     
+    if not os.path.exists('trading.db'):
+        print("trading.db not found. Initializing database...")
+        init_db()
     
     time.sleep(2)  # Wait for 2 seconds to ensure the first script completes
     threads = []

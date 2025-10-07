@@ -39,94 +39,106 @@ def log_instruments_file_mod_time(filename):
 
 
 def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS completed_trades (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            signal TEXT,
-            spot_entry REAL,
-            option_symbol TEXT,
-            strike INTEGER,
-            expiry TEXT,
-            option_sell_price REAL,
-            entry_time TEXT,
-            spot_exit REAL,
-            option_buy_price REAL,
-            exit_time TEXT,
-            pnl REAL,
-            qty INTEGER,
-            interval TEXT,               
-            real_trade TEXT,            
-            entry_reason TEXT,           
-            exit_reason TEXT,
-            expiry_type TEXT,
-            strategy TEXT,
-            key TEXT,
-            user_id INTEGER            
-        )
-    """)
-  
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS open_trades (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            signal TEXT,
-            spot_entry REAL,
-            option_symbol TEXT,
-            strike INTEGER,
-            expiry TEXT,
-            option_sell_price REAL,
-            entry_time TEXT,
-            qty INTEGER,
-            interval TEXT,               
-            real_trade TEXT,             
-            entry_reason TEXT,
-            expiry_type TEXT,
-            strategy TEXT,
-            key TEXT,
-            user_id INTEGER            
-        )
-    """)
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS user_dtls (
-            id	INTEGER PRIMARY KEY AUTOINCREMENT,
-            user	TEXT ,
-            kite_username	TEXT ,
-            kite_password	TEXT ,
-            kite_api_secret	TEXT ,
-            kite_api_key	TEXT ,
-            kite_totp_token	TEXT ,
-            telegram_chat_id	TEXT,
-            telegram_token	TEXT,
-            active_flag	INTEGER,
-            crt_dt	TEXT
-        )
-    """
-)
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS trade_config (
-            ID	INTEGER PRIMARY KEY AUTOINCREMENT,
-            USER_ID	INTEGER,
-            KEY	TEXT UNIQUE,
-            INTERVAL	TEXT,
-            QTY	TEXT,
-            NEAREST_LTP	INTEGER,
-            INTRADAY	TEXT,
-            NEW_TRADE	TEXT,
-            TRADE	TEXT,
-            EXPIRY	TEXT,
-            STRATEGY	TEXT,
-            CRT_DT	TEXT,
-            LST_UPDT_DT	TEXT,
-            ROLLOVER TEXT,
-            FOREIGN KEY(USER_ID) REFERENCES user_dtls(id)
-        ) 
-    """
-)   
-    
-    conn.commit()
-    conn.close()
+    try:
+        # Connect to SQLite database (will create file if it doesn't exist)
+        conn = sqlite3.connect(DB_FILE)
+        c = conn.cursor()
+
+        # Create completed_trades table
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS completed_trades (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                signal TEXT,
+                spot_entry REAL,
+                option_symbol TEXT,
+                strike INTEGER,
+                expiry TEXT,
+                option_sell_price REAL,
+                entry_time TEXT,
+                spot_exit REAL,
+                option_buy_price REAL,
+                exit_time TEXT,
+                pnl REAL,
+                qty INTEGER,
+                interval TEXT,
+                real_trade TEXT,
+                entry_reason TEXT,
+                exit_reason TEXT,
+                expiry_type TEXT,
+                strategy TEXT,
+                key TEXT,
+                user_id INTEGER
+            )
+        """)
+
+        # Create open_trades table
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS open_trades (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                signal TEXT,
+                spot_entry REAL,
+                option_symbol TEXT,
+                strike INTEGER,
+                expiry TEXT,
+                option_sell_price REAL,
+                entry_time TEXT,
+                qty INTEGER,
+                interval TEXT,
+                real_trade TEXT,
+                entry_reason TEXT,
+                expiry_type TEXT,
+                strategy TEXT,
+                key TEXT,
+                user_id INTEGER
+            )
+        """)
+
+        # Create user_dtls table
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS user_dtls (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user TEXT,
+                kite_username TEXT,
+                kite_password TEXT,
+                kite_api_secret TEXT,
+                kite_api_key TEXT,
+                kite_totp_token TEXT,
+                telegram_chat_id TEXT,
+                telegram_token TEXT,
+                active_flag INTEGER,
+                crt_dt TEXT
+            )
+        """)
+
+        # Create trade_config table
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS trade_config (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                USER_ID INTEGER,
+                KEY TEXT UNIQUE,
+                INTERVAL TEXT,
+                QTY TEXT,
+                NEAREST_LTP INTEGER,
+                INTRADAY TEXT,
+                NEW_TRADE TEXT,
+                TRADE TEXT,
+                EXPIRY TEXT,
+                STRATEGY TEXT,
+                CRT_DT TEXT,
+                LST_UPDT_DT TEXT,
+                ROLLOVER TEXT,
+                FOREIGN KEY(USER_ID) REFERENCES user_dtls(id)
+            )
+        """)
+
+        # Commit changes and close connection
+        conn.commit()
+        print(f"Database initialized successfully at {os.path.abspath(DB_FILE)}")
+    except sqlite3.Error as e:
+        print(f"SQLite error: {e}")
+    finally:
+        if conn:
+            conn.close()
 
 def save_trade_config(new_config):
     """

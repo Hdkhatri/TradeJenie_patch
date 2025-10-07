@@ -11,6 +11,5 @@ INSTRUMENTS_FILE = "nifty_instruments.csv"
 LOG_FILE = "live_trading.log"
 DB_FILE = "Trading.db"
 
-SERVER = "Local"
-#SERVER = "GCP"  # PROD or TEST
-
+#SERVER = "Local"  # Local
+SERVER = "GCP-TradeJenie"     # PROD 
